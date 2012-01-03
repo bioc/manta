@@ -1,0 +1,299 @@
+\documentclass{article}
+
+\usepackage{natbib}
+\usepackage{graphics}
+\usepackage{amsmath}
+\usepackage{indentfirst}
+\usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+
+\newcommand{\Rfunction}[1]{{\texttt{#1}}}
+\newcommand{\Rpackage}[1]{{\textit{#1}}}
+
+%\VignetteIndexEntry{manta}
+
+\begin{document}
+\setkeys{Gin}{width=1.1\textwidth} 
+
+<<foo,include=FALSE,echo=FALSE>>=
+options(keep.source = TRUE, width = 60)
+foo <- packageDescription("manta")
+@
+
+\title{MANTA: \\ Microbial Assemblage \\ Normalized Transcript Analysis \\ (Version \Sexpr{foo$Version})}
+\author{
+David Schruth\\ \texttt{dschruth@uw.edu} \and Adrian Marchetti \\ \texttt{amarchetti@unc.edu}
+}
+\maketitle
+\section{Licensing}
+This package is licensed under the Artistic License v2.0: it is therefore free to use and redistribute, 
+however, we, the copyright holders, wish to maintain primary artistic control over any further development.   
+Please be sure to cite us if you use this package in work leading to publication.
+
+
+\section{Installation}
+Building the \Rpackage{manta} package from source requires that you have the proper dependency packages, \Rpackage{caroline} and \Rpackage{edgeR}, installed from CRAN and Bioconductor respectively. 
+This can typically be accomplished via the following commands from within the R command line environment:
+\begin{verbatim}
+install.packages('caroline')   # CRAN install
+biocLite('http://bioconductor.org/biocLite.R')
+biocLite('edgeR')      # Bioconductor install
+\end{verbatim}
+
+Currently, however, the most recent development version of the \Rpackage{edgeR} package (> v2.5) is recommended.  
+It must be downloaded from \url{http://bioconductor.org/packages/2.10/bioc/} and built manually.
+The \Rpackage{manta} and \Rpackage{edgeR} packages should be installed from these source archives using the following commands:
+\begin{verbatim}
+R CMD INSTALL edgeR_x.y.z.tar.gz
+R CMD INSTALL manta_x.y.z.tar.gz
+\end{verbatim}
+After a successful installation the \Rpackage{manta} package can be loaded in the normal way:  by starting R and invoking the following \Rfunction{library} command:
+<<loadlib, results=hide>>=
+library(manta)
+@
+
+\section{Introduction}
+One of the most difficult aspects of working with environmental shotgun sequence data has been the challenge of assigning reads to specific taxa that are collectively part of a mixed community assemblage. 
+Continued advances in sequencing technologies--both in read lengths and throughput--have improved taxonomic assignment certainties and boosted the significance of differential expression [DE] analyses between samples.  
+Key challenges, however, still remain in performing robust DE analysis on taxonomic subsets of these community level samples.
+Selection-induced shifts in the species composition of the underlying community of study are unfortunate side-effects of a multi-condition experiment and can alter measured taxonomic proportions and confound DE analysis. 
+This is also applicable when comparing sequence libraries from environmental surveys in space and time.
+Employing robust normalizing techniques to control for these shifts is important when attempting to perform comparative transcriptomics on a taxonomic subset of a metatranscriptome. 
+Equally important is deciding upon appropriately filtered taxonomic subsets for valid DE analysis.
+This document provides an introduction to the \Rpackage{manta} R package, which enables comparative metatranscritomic statistical analysis by helping users decide how to appropriately subset mixed transcript collections and thereby aide in disentangling taxonomic abundance shifts from the underlying within-species expression differences for subsequent DE analysis.
+
+
+\section{The MANTA object}
+The MANTA object is derivative of the DGEList object (from the \Rpackage{edgeR} package) but additionally keeps track of taxonomic meta-information and summaries of these taxonomic bins.  
+As with its parent class, the DGEList object, the two required inputs for manta object instantiation are: 1) read counts organized into a gene (rows) by lane (columns) matrix where each row and column has a unique name and
+2) a dataframe detailing provenance information for each column of the count matrix (at the very minimum, a 'groups' parameter binning the conditions of counts into replicates of individual conditions).
+
+
+<<manta echo=FALSE, results=hide>>=
+
+cts.path <- system.file("extdata","PapaGO-BWA.counts-diatoms.tab", package="manta")
+cts <- read.delim(cts.path)
+samples <- makeSampleDF(cts)
+obj.simple <- manta(counts= cts, samples = samples)
+print(obj.simple)
+
+@
+
+\section{Data Input}
+
+Although the \Rpackage{manta} object can be instantiated for non-meta transcriptomic analysis (as demonstrated in the previous section), it is often the case that the original raw data is more complicated, comes in a variety of formats, and/or contains additional information that would not otherwise be utilized.
+In this section we outline several different ways that (meta) transcriptomic (and associated) data can be read into the \Rpackage{manta} object to enable subsequent visualization and analysis.
+
+\subsection{Counts}
+
+The simplest way to create a \Rpackage{manta} object is from raw count data.   
+These counts must be annotated minimally with gene names and ideally with taxonomic (meta) information as well.  
+The function \Rfunction{counts2manta} (which calls the underlying \Rfunction{tableMetas} and \Rfunction{tableMetaSums} functions) is the method you should use when converting counts.
+
+<<counts2manta>>=
+cts.path <- system.file("extdata","PapaGO-BWA.counts-diatoms.tab", package="manta")
+cts <- read.delim(cts.path)
+cts.annot.path <- system.file("extdata","PapaGO-BWA.annot-diatoms.tab", package="manta")
+cts.annot <- read.delim(cts.annot.path, stringsAsFactors=FALSE)
+
+obj <- counts2manta(cts, annotation=cts.annot,
+                    a.merge.clmn='query_seq', agg.clmn='what_def', meta.clmns=c('family','genus_sp'),
+                    gene.clmns=c('what_def','kid','pathway'))
+@
+
+Notice that the secondary annotation table can (and often will) be completely different dimensions than the cts table.
+
+\subsection{Annotation Alignment}
+
+Another very common and convenient source format for \Rpackage{manta} object instantiation is tabular output from an alignment program such as BLAST.   
+It is required that the alignment data frame have at least two columns at a minimum: a gene name column and a condition column.  
+To get full use out of the package, however, it is recommended that taxonomic meta information is also included.  
+The \Rfunction{align2manta} function is the method of choice for converting this alignment into a manta object.
+
+<<align2manta>>=
+align.path <- system.file("extdata","PapaGO-BLAST.results-diatoms.tab", package="manta")
+annot.diatoms <- read.delim(align.path, stringsAsFactors=FALSE)
+obj <- align2manta(annot.diatoms, cond.clmn='treatment', agg.clmn='what_def',
+			gene.clmns=c('what_def','kid','pathway'), 
+			meta.clmns=c('family','genus_sp'))
+@
+
+
+
+\subsection{SEAStAR Format}
+A third possibility (a special case of count input, detailed above in 5.1) is the Armbrust Lab's SEASTaR format which can easily be converted into counts via \Rfunction{readSeastar} or the \Rfunction{seastar2manta} functions: where the later is a wrapper for the former.
+<<readSeastar>>=
+conditions <- caroline::nv(factor(x=1:2, labels=c('ambient','plusFe')),c('ref','obs'))
+ss.names <- caroline::nv(paste('Pgranii-',conditions,'.seastar', sep=''), conditions)
+ss.paths <- system.file("extdata",ss.names, package="manta")
+
+df <- readSeastar(ss.paths[1])
+
+@
+
+\subsection{PPlacer Format}
+A fourth input option is pplacer format, the output of the (shotgun sequencing read) phylogenetic placement program by the same name. 
+This format consists of a directory of gene named folders, each of which contains an underlying SQLite taxonomic database file.
+<<pplacer2manta>>=
+KOG.SQLite.repo <- system.file("extdata","pplacer", package="manta")
+obj.KOG <- pplacer2manta(dir=KOG.SQLite.repo, 
+ 	                 groups=c('coastal','costal','DCM','surface','upwelling'),
+ 	                 norm=FALSE, disp=FALSE
+ 	                 )
+
+@
+
+
+\section{Assemblage Subsetting \& Compositional Bias}
+One key assumption of assessing DE genes in a mixed community of organisms is that they have similar differential genetic responses between conditions.  
+It is possible, however, that organisms within a community may \emph{not} respond in the same way under varied experimental conditions, violating this assumption (of no-compositional bias).
+We have therefore developed a test to determine if a particular community sample is composed of biased taxonomic subsets.
+
+To test this assumption, we suggest begining with a barchart-style visualization using a \Rfunction{compbiasPlot} 
+<<compbiasPlot>>=
+compbiasPlot(obj, pair=conditions, meta.lev='genus_sp', meta.lev.lim=7)
+@
+
+\begin{figure}
+\begin{center}
+<<label=fig1,fig=TRUE,echo=FALSE, results=hide, width=8.5, height=5>>=
+<<compbiasPlot>>
+@
+\end{center}
+\caption{compbiasPlot(obj)}
+\label{fig:one}
+\end{figure}
+
+We've also written a simple F-test function for the manta object which can be run as follows:
+
+<<compbiasTest>>=
+
+compbiasTest(obj, meta.lev='genus_sp')
+@
+If the test is significant, it's advisable to remove the outlier population(s) before performing subsequent DE analysis.  
+In the example above, the boxplots suggest that both Pseudo-nitzschia granii \& P.australis have housekeeping genes with fold change distributions different from the other diatom species detected in this dataset.
+And indeed, \Rfunction{compbiasTest} confirms that these differences are probably not due to chance.
+Once this has been determined, we can subset out and re-test like so:
+
+
+<<compbiasTest2>>=
+annot.diatoms.sub <- subset(annot.diatoms,  !genus_sp %in% paste('Pseudo-nitzschia',c('granii','australis')))
+obj.sub <- align2manta(annot.diatoms.sub, cond.clmn='treatment', agg.clmn='what_def',
+				gene.clmns=c('what_def','kid','pathway'), 
+				meta.clmns=c('family','genus_sp'))
+compbiasTest(obj.sub, meta.lev='genus_sp')
+@
+
+As you can see, the same test on this new subset of diatoms fails to reject the null hypothesis of no housekeeping gene change in expression. 
+We can now move on to assessing significant differential expression of the genes in this subset, without the misinforming species confounding the analysis. 
+By focusing on a more homogenous, similarly responding subset of species, we can greatly improve the power of the DE analysis.
+
+\section{Normalization and Differential Expression}
+The \Rpackage{edgeR} and \Rpackage{manta} packages both provide support for normalization and estimation of DE genes.  
+Prerequisite calculations for normalization factors and dispersion coefficients (respectively) can be carried out like so:
+<<exactTest>>=
+obj.sub <- calcNormFactors(obj.sub)
+obj.sub <- estimateCommonDisp(obj.sub) #this is folded into the manta creation function for now
+
+@
+  
+The \Rpackage{manta} object improves upon this approach by incorporating the above \Rfunction{calcNormFactors} and \Rfunction{estimateCommonDisp} steps into the creation of a \Rpackage{manta} object.  
+These two steps are unecessasry unless, of course, non-default parameters need to be specified.
+
+DE analysis is carried out on the normalized and dispersion estimated object in the standard way using the \Rfunction{exactTest} function.
+<<exacttest>>=
+test <- exactTest(obj.sub)  # edgeR
+@
+
+Other likelihood based tests such as \Rfunction{glmFit} and \Rfunction{glmLRT} also run in a similar fashion.
+
+\subsection{Finding Outliers}
+One useful function built into \Rpackage{manta}'s underlying \Rpackage{edgeR} package is the \Rfunction{topTags} function, which returns the most extreme up and down regulated DE genes as sorted by either p.value or fold change.  Another function, \Rfunction{outGenes} (in the \Rpackage{manta} package), provides additional (cut-off based) functionality for identifying these fold change outliers as well as those with high average absolute read count.
+
+
+<<outliers>>=
+topTags(test, n=5)
+out <- outGenes(test) 
+@
+
+\section{RA Plots}
+Another feature the \Rpackage{manta} package offers is the ability to create sophisticated plots for visualizing DE.  
+Improving upon \Rpackage{edgeR} which contains \Rfunction{maPlot} for creating Magnitude Amplitude [MA] plots from a pair of count vectors, the \Rpackage{manta} package offers native plotting support for its \Rpackage{manta} object, instead employing \Rfunction{raPlot} to generate Ratio Average [RA] plots, as implemented in the \Rpackage{caroline} package.   
+RA plots are nearly identical to MA plots with the exception of the distinctive geometric 'ray' (arrow) shape caused by the way the condition unique points are included, via an added epsilon factor, in the plot.
+The diagonal positioning of these library-unique wings (forming the head of the arrow), aligns points in the wings to fold-change and amplitude levels of non-wing points that have similar p-values.  
+
+\subsection{MANTA RA-plots}
+Any meta information available in the 'meta' slot of the manta object can be included in the RA plot as pie-chart overlays depicting the taxonomic distribution of any particular gene on the plot.   
+Significance of DE is easily visualized in the plot via the 'borders' parameter. 
+The normalization line can be added using the mm parameter or the mm slot on the plotted manta object.
+<<plotmanta>>=
+obj.sub$nr <- nf2nr(x=obj.sub, pair=conditions)
+
+plot(obj.sub, main='Diatom Gene Expression\n at Ocean Station Papa', meta.lev='genus_sp', pair=conditions, lgd.pos='bottomright')
+@
+
+\begin{figure}
+\begin{center}
+<<label=fig2,fig=TRUE,echo=FALSE, results=hide, width=8, height=10>>=
+<<plotmanta>>
+@
+\end{center}
+\caption{an example of plot(manta) call.
+}
+\label{fig:two}
+\end{figure}
+
+
+
+\subsection{Pseudo RA-plots}
+Another simple way to plot the differential expression data is to use the new \Rfunction{de2ra} function which uses the raw R (logFC) and A (logConc) values outputed from \Rfunction{exactTest}.  
+This can be a convenient solution when plotting count data with replicates (something that is currently not supported in \Rfunction{raPlot} or \Rfunction{maPlot}).
+
+<<plotdetest>>=
+de2ra(test$table)
+
+@
+\begin{figure}
+\begin{center}
+<<label=fig3,fig=TRUE,echo=FALSE, results=hide, width=8, height=10>>=
+<<plotdetest>>
+@
+\end{center}
+\caption{an example of de2ra(exactTest(obj)) call.
+}
+\label{fig:three}
+\end{figure}
+\newpage
+
+
+\subsection{Annotating via HyperPlot}
+A new R function for annotating scatterplots with interactive hover text and links is also compatible with the manta object.
+
+
+<<hyperplot>>=
+caroline::hyperplot(obj, annout=out, browse=FALSE) 
+@
+
+
+\begin{thebibliography}{}
+
+\bibitem[Robinson \textit{et~al}. (2010)]{Robinson2010}
+
+  Robinson MD, McCarthy DJ and Smyth GK (2010). edgeR: a Bioconductor
+  package for differential expression analysis of digital gene
+  expression data. Bioinformatics 26, 139-140
+
+\bibitem[Robinson and Smyth (2009)]{Robinson2007}
+
+  Robinson MD and Smyth GK (2007). Moderated statistical tests for
+  assessing differences in tag abundance. Bioinformatics 23, 2881-2887
+
+\bibitem[Matsen \textit{et~al}. (2010)]{Matsen2010}
+  Matsen FA, Kodner RB, and Armbrust EV (2010).
+  pplacer: linear time maximum-likelihood and Bayesian phylogenetic placement of sequences onto a fixed reference tree.
+  BMC Bioinformatics 11, 538
+
+
+\end{thebibliography}
+
+\end{document}
