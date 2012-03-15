@@ -1,4 +1,4 @@
-outGenes <- function(x, n=50, p=1e-5, FC=1, A.pct=.05, uk.filter=NULL, method='BH',  verbose=TRUE){
+outGenes <- function(x, n=50, p=.05, FC=1, A.pct=.05, uk.filter=NULL, method='BH',  verbose=TRUE){
 
   is.DGE.test <- class(x) == 'DGEExact'
   if(is.DGE.test)
@@ -10,17 +10,17 @@ outGenes <- function(x, n=50, p=1e-5, FC=1, A.pct=.05, uk.filter=NULL, method='B
   orig.nms <- names(x)
   
   if(is.DGE.test)
-    names(x) <- sub('logConc','A', sub('logFC','R', names(x)))
+    names(x) <- sub('logCPM','A', sub('logFC','R', names(x)))
 
 
   
-  x$adj.p <- p.adjust(x$p.value, method=method)
+  x$adj.p <- p.adjust(x$PValue, method=method)
 
   if(!is.null(uk.filter))
     x <- x[apply(sapply(uk.filter, function(f) !grepl(f,rownames(x))),1, all),]
 
   x.in <- x
-  x <- subset(x, adj.p < p  &  (R > FC | R < -FC))
+  x <- subset(x, PValue <= p  &  (R > FC | R < -FC))
 
   if(n <= 0)
     n <- nrow(x)

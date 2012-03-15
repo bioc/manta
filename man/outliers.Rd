@@ -6,7 +6,7 @@
 .
 }
 \usage{
-outGenes(x, n=50, p=1e-5, FC=1, A.pct=.05, uk.filter=NULL, method='BH',  verbose=TRUE)
+outGenes(x, n=50, p=.05, FC=1, A.pct=.05, uk.filter=NULL, method='BH',  verbose=TRUE)
 }
 \arguments{
 \item{x}{a MANTA object.}

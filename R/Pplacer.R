@@ -100,3 +100,9 @@ pplacer2manta <- function(dir='code/R-mbrust/manta/inst/extdata/pplacer',
   
 }
 
+
+
+
+metataxa2subcounts <- function(x, meta.lev='species', taxa.filter){
+ t(sapply(x$meta[[meta.lev]], function(i) i[taxa.filter,]))
+}

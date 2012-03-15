@@ -6,9 +6,9 @@ This function reads Vaughn Iverson's SEAStAR tabular format output and appends h
 }
 \usage{
 readSeastar(path,
-clmn.names=c('seq_id','bit_score','read_count','abundance','abundance_per_total_cov','coverage','coverage_per_abundance','seq_len','gc_percent','ref_seq_name','seq_desc'),
+clmn.names=c('seq_id','bit_score','read_count','raw_abundance','fractional_abundance','mean_coverage','mean_read_length','seq_len','gc_percent','ref_seq_name','ref_seq_desc'),
 clmn.class = c("character", rep("numeric", 6), "integer", "numeric", rep("character", 2)),
-name.clmn='ref_seq_name', ret.df=FALSE, ct.calc=expression(abundance*seq_len), header = FALSE)
+name.clmn='seq_id', ret.df=FALSE, ct.calc=expression(fractional_abundance*seq_len), header = FALSE, ...)
 }
 \arguments{
 \item{path}{path to the seastar file}
@@ -18,6 +18,7 @@ name.clmn='ref_seq_name', ret.df=FALSE, ct.calc=expression(abundance*seq_len), h
 \item{ret.df}{return the entire dataframe rather than just the calculated count column}
 \item{ct.calc}{the equation to use to calculate the counts}
 \item{header}{if the seastar tables have headers}
+\item{...}{additional parameters passed on to read.delim}
 }
 \value{
 a SEAStAR formated matrix of per-reference/contig/gene stats (including counts)

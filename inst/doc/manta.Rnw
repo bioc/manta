@@ -191,15 +191,19 @@ By focusing on a more homogenous, similarly responding subset of species, we can
 \section{Normalization and Differential Expression}
 The \Rpackage{edgeR} and \Rpackage{manta} packages both provide support for normalization and estimation of DE genes.  
 Prerequisite calculations for normalization factors and dispersion coefficients (respectively) can be carried out like so:
-<<exactTest>>=
+<<dispersion2>>=
 obj.sub <- calcNormFactors(obj.sub)
-obj.sub <- estimateCommonDisp(obj.sub) #this is folded into the manta creation function for now
-
+obj.sub <- estimateCommonDisp(obj.sub) 
+@
+Because our example dataset doesn't have any replicates, estimateCommonDisp returns NA.  
+Although it is not advised to proceded on to performing inferential statistics without replicates, 
+the \Rpackage{edgeR} manual offers several alternatives to assuming that biological variability is absent.
+For the purposes of example we use \Rpackage{edgeR}'s \Rfunction{estimateGLMCommonDisp} which returns a common dispersion estimate near 0.9.
+<<dispersion2manual>>=
+obj.sub <- estimateGLMCommonDisp(obj.sub, method="deviance", robust=TRUE , subset=NULL)
+obj.sub$common.dispersion
 @
   
-The \Rpackage{manta} object improves upon this approach by incorporating the above \Rfunction{calcNormFactors} and \Rfunction{estimateCommonDisp} steps into the creation of a \Rpackage{manta} object.  
-These two steps are unecessasry unless, of course, non-default parameters need to be specified.
-
 DE analysis is carried out on the normalized and dispersion estimated object in the standard way using the \Rfunction{exactTest} function.
 <<exacttest>>=
 test <- exactTest(obj.sub)  # edgeR
@@ -246,11 +250,11 @@ plot(obj.sub, main='Diatom Gene Expression\n at Ocean Station Papa', meta.lev='g
 
 
 \subsection{Pseudo RA-plots}
-Another simple way to plot the differential expression data is to use the new \Rfunction{de2ra} function which uses the raw R (logFC) and A (logConc) values outputed from \Rfunction{exactTest}.  
+Another simple way to plot the differential expression data is directly plot the raw R (logFC) and A (logCPM) values output from \Rfunction{exactTest}.  
 This can be a convenient solution when plotting count data with replicates (something that is currently not supported in \Rfunction{raPlot} or \Rfunction{maPlot}).
 
 <<plotdetest>>=
-de2ra(test$table)
+with(test$table, plot(logCPM, logFC))
 
 @
 \begin{figure}
@@ -277,6 +281,16 @@ caroline::hyperplot(obj, annout=out, browse=FALSE)
 
 \begin{thebibliography}{}
 
+\bibitem[Marchetti \textit{et~al}. (2012)]{Marchetti2012}
+  Marchetti A, Schruth DM, Durkin CA, Parker MS, Kodner RB, Berthiaume CT, Morales R, Allen A, and Armbrust EV (2012).
+  Comparative metatranscriptomics identifies molecular bases for the physiological responses of phytoplankton to varying iron availability.
+  Proceedings of the National Academy of Sciences 109, no.6, E317
+
+\bibitem[Matsen \textit{et~al}. (2010)]{Matsen2010}
+  Matsen FA, Kodner RB, and Armbrust EV (2010).
+  pplacer: linear time maximum-likelihood and Bayesian phylogenetic placement of sequences onto a fixed reference tree.
+  BMC Bioinformatics 11, 538
+
 \bibitem[Robinson \textit{et~al}. (2010)]{Robinson2010}
 
   Robinson MD, McCarthy DJ and Smyth GK (2010). edgeR: a Bioconductor
@@ -287,11 +301,6 @@ caroline::hyperplot(obj, annout=out, browse=FALSE)
 
   Robinson MD and Smyth GK (2007). Moderated statistical tests for
   assessing differences in tag abundance. Bioinformatics 23, 2881-2887
-
-\bibitem[Matsen \textit{et~al}. (2010)]{Matsen2010}
-  Matsen FA, Kodner RB, and Armbrust EV (2010).
-  pplacer: linear time maximum-likelihood and Bayesian phylogenetic placement of sequences onto a fixed reference tree.
-  BMC Bioinformatics 11, 538
 
 
 \end{thebibliography}
