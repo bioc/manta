@@ -198,7 +198,7 @@ obj.sub <- estimateCommonDisp(obj.sub)
 Because our example dataset doesn't have any replicates, estimateCommonDisp returns NA.  
 Although it is not advised to proceded on to performing inferential statistics without replicates, 
 the \Rpackage{edgeR} manual offers several alternatives to assuming that biological variability is absent.
-For the purposes of example we use \Rpackage{edgeR}'s \Rfunction{estimateGLMCommonDisp} which returns a common dispersion estimate near 0.9.
+For the purposes of example we use \Rpackage{edgeR}'s \Rfunction{estimateGLMCommonDisp}.
 <<dispersion2manual>>=
 obj.sub <- estimateGLMCommonDisp(obj.sub, method="deviance", robust=TRUE , subset=NULL)
 obj.sub$common.dispersion
@@ -263,8 +263,7 @@ with(test$table, plot(logCPM, logFC))
 <<plotdetest>>
 @
 \end{center}
-\caption{an example of de2ra(exactTest(obj)) call.
-}
+\caption{plot(logCPM, logFC)}
 \label{fig:three}
 \end{figure}
 \newpage

@@ -1,7 +1,7 @@
 
 # 1) seq_id = sequence_id
 # 2) bit_score -- Bits of information in alignment to reference
-# 3) read_count = abundance*seq_len -- Fractional read count
+# 3) read_count = raw_abundance*seq_len -- Fractional read count
 # 4) raw_abundance -- Length normalized fractional read count
 # 5) fractional_abundance -- Fractional abundance of this reference out of all references (length normalized)
 # 6) mean_coverage -- Mean coverage of reference by aligned reads
@@ -14,7 +14,7 @@
 
 readSeastar <- function(path, clmn.names=c('seq_id','bit_score','read_count','raw_abundance','fractional_abundance','mean_coverage','mean_read_length','seq_len','gc_percent','ref_seq_name','ref_seq_desc'),
                               clmn.class=c('character',rep('numeric',6), 'integer', 'numeric', rep('character',2)),
-                        name.clmn='seq_id', ret.df=FALSE, ct.calc=expression(fractional_abundance*seq_len), header=FALSE, ...){
+                        name.clmn='seq_id', ret.df=FALSE, ret.clmn='read_count', ct.calc=expression(raw_abundance*seq_len), header=FALSE, ...){
 
   if(!name.clmn %in% clmn.names)
     stop('name.clmn must be one of the columns specified in clmn.names')
@@ -24,7 +24,7 @@ readSeastar <- function(path, clmn.names=c('seq_id','bit_score','read_count','ra
   if(ret.df)
     df
   else
-    nv(df, 'count')
+    nv(df, ret.clmn)
 
 }
 
