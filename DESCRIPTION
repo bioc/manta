@@ -3,7 +3,7 @@ Version: 1.5.0
 Date: 2012-03-15
 Title: Microbial Assemblage Normalized Transcript Analysis
 Author: David M. Schruth <dschruth@uw.edu> and Adrian Marchetti <amarchetti@unc.edu> 
-Maintainer: David M. Schruth <dschruth@uw.edu> 
+Maintainer: Chris Berthiaume <chrisbee@uw.edu>, David M. Schruth <dschruth@uw.edu> 
 Depends: R (>= 1.8.0), methods, edgeR (>= 2.5.13)
 Imports: Hmisc, caroline(>= 0.6.6)
 Suggests: RSQLite, plotrix
