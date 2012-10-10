@@ -2,8 +2,8 @@ Package: manta
 Version: 1.5.0
 Date: 2012-03-15
 Title: Microbial Assemblage Normalized Transcript Analysis
-Author: David M. Schruth <dschruth@uw.edu> and Adrian Marchetti <amarchetti@unc.edu> 
-Maintainer: Chris Berthiaume <chrisbee@uw.edu>, David M. Schruth <dschruth@uw.edu> 
+Author: David M. Schruth <dschruth@uw.edu>, Adrian Marchetti <amarchetti@unc.edu>, Ginger Armbrust <armbrust@ocean.washington.edu>
+Maintainer: Chris Berthiaume <chrisbee@uw.edu>, Adrian Marchetti <amarchetti@unc.edu>
 Depends: R (>= 1.8.0), methods, edgeR (>= 2.5.13)
 Imports: Hmisc, caroline(>= 0.6.6)
 Suggests: RSQLite, plotrix
