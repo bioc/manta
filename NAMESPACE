@@ -1,24 +1,3 @@
-importFrom(caroline, 
-		m,
-		tab2df, 
-		pies, 
-		nv, 
-		sstable, 
-		delist, 
-		groupBy, 
-		regroup, 
-		leghead, 
-		usr2lims, 
-		nerge,
-		geomean,
-
-		raPlot,		
-		raAddArms,
-		raAddSigLines,
-		raAddAxLabs,
-		hyperplot
-)
-
 importFrom(Hmisc, wtd.mean, wtd.var)
 importClassesFrom(edgeR,'DGEList')
 exportPattern("^[^\\.]")
