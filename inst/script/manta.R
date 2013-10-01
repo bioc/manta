@@ -7,7 +7,7 @@
 
 
 ## convert the command line paramters into variables
-require(caroline)
+library(manta)
 cmdArgsToVariables() 
 
 if(exists('input.file.path')){ 
