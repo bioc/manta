@@ -30,7 +30,7 @@ seastar2counts
 \examples{
 
 conditions <- c('ambient','plusFe')
-ss.names <- caroline::nv(paste('Pgranii-',conditions,'.seastar', sep=''), conditions)
+ss.names <- nv(paste('Pgranii-',conditions,'.seastar', sep=''), conditions)
 
 ss.paths <- system.file("extdata",ss.names, package="manta")
 
