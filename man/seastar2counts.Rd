@@ -24,9 +24,9 @@ nerge, merge
 \examples{
 
 conditions <- c('ambient','plusFe')
-ss.names <- caroline::nv(paste('Pgranii-',conditions,'.seastar', sep=''), conditions)
+ss.names <- nv(paste('Pgranii-',conditions,'.seastar', sep=''), conditions)
 
-ss.paths <- caroline::nv(system.file("extdata",ss.names, package="manta"), conditions)
+ss.paths <- nv(system.file("extdata",ss.names, package="manta"), conditions)
 
 dfm <- seastar2counts(ss.paths)
 

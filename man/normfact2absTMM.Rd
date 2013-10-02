@@ -24,7 +24,7 @@ manta, mantaMethod
 }
 \examples{
 
-conditions <- caroline::nv(factor(x=1:2, labels=c('ambient','plusFe')) ,c('ref','obs'))
+conditions <- nv(factor(x=1:2, labels=c('ambient','plusFe')) ,c('ref','obs'))
 manta.path <- system.file("extdata","PapaGO-BLAST.results-diatoms.Rdata", package="manta")
 load(manta.path)
 
