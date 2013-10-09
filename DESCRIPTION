@@ -5,7 +5,7 @@ Title: Microbial Assemblage Normalized Transcript Analysis
 Author: Ginger Armbrust, Adrian Marchetti, David M. Schruth
 Maintainer: Chris Berthiaume <chrisbee@uw.edu>, Adrian Marchetti <amarchetti@unc.edu>
 Depends: R (>= 1.8.0), methods, edgeR (>= 2.5.13)
-Imports: Hmisc
+Imports: Hmisc, caroline(>= 0.6.6)
 Suggests: RSQLite, plotrix
 Description: Tools for robust comparative metatranscriptomics.  
 biocViews: DifferentialExpression, RNAseq, Genetics, GeneExpression, Bioinformatics, HighThroughputSequencing, QualityControl, DataImport, Visualization

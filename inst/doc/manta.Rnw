@@ -37,6 +37,7 @@ Please be sure to cite us if you use this package in work leading to publication
 Building the \Rpackage{manta} package from source requires that you have the proper dependency packages, \Rpackage{caroline} and \Rpackage{edgeR}, installed from CRAN and Bioconductor respectively. 
 This can typically be accomplished via the following commands from within the R command line environment:
 \begin{verbatim}
+install.packages('caroline')   # CRAN install
 biocLite('http://bioconductor.org/biocLite.R')
 biocLite('edgeR')      # Bioconductor install
 \end{verbatim}
@@ -124,8 +125,8 @@ obj <- align2manta(annot.diatoms, cond.clmn='treatment', agg.clmn='what_def',
 \subsection{SEAStAR Format}
 A third possibility (a special case of count input, detailed above in 5.1) is the Armbrust Lab's SEASTaR format which can easily be converted into counts via \Rfunction{readSeastar} or the \Rfunction{seastar2manta} functions: where the later is a wrapper for the former.
 <<readSeastar>>=
-conditions <- nv(factor(x=1:2, labels=c('ambient','plusFe')),c('ref','obs'))
-ss.names <- nv(paste('Pgranii-',conditions,'.seastar', sep=''), conditions)
+conditions <- caroline::nv(factor(x=1:2, labels=c('ambient','plusFe')),c('ref','obs'))
+ss.names <- caroline::nv(paste('Pgranii-',conditions,'.seastar', sep=''), conditions)
 ss.paths <- system.file("extdata",ss.names, package="manta")
 
 df <- readSeastar(ss.paths[1])
@@ -275,7 +276,7 @@ A new R function for annotating scatterplots with interactive hover text and lin
 
 
 <<hyperplot>>=
-hyperplot(obj, annout=out, browse=FALSE) 
+caroline::hyperplot(obj, annout=out, browse=FALSE) 
 @
 
 
