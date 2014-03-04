@@ -1,13 +1,15 @@
 Package: manta
-Version: 1.9.1
+Version: 1.9.2
 Date: 2012-03-15
 Title: Microbial Assemblage Normalized Transcript Analysis
 Author: Ginger Armbrust, Adrian Marchetti, David M. Schruth
-Maintainer: Chris Berthiaume <chrisbee@uw.edu>, Adrian Marchetti <amarchetti@unc.edu>
+Maintainer: Chris Berthiaume <chrisbee@uw.edu>, Adrian Marchetti
+        <amarchetti@unc.edu>
 Depends: R (>= 1.8.0), methods, edgeR (>= 2.5.13)
 Imports: Hmisc, caroline(>= 0.6.6)
 Suggests: RSQLite, plotrix
-Description: Tools for robust comparative metatranscriptomics.  
-biocViews: DifferentialExpression, RNAseq, Genetics, GeneExpression, Bioinformatics, HighThroughputSequencing, QualityControl, DataImport, Visualization
+Description: Tools for robust comparative metatranscriptomics.
 License: Artistic-2.0
 URL: http://manta.ocean.washington.edu/
+biocViews: DifferentialExpression, RNASeq, Genetics, GeneExpression,
+        Sequencing, QualityControl, DataImport, Visualization
