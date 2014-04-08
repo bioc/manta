@@ -23,8 +23,6 @@ foo <- packageDescription("manta")
 \title{MANTA: \\ Microbial Assemblage \\ Normalized Transcript Analysis \\ (Version \Sexpr{foo$Version})}
 \author{
 Adrian Marchetti \\ \texttt{amarchetti@unc.edu}
-\and 
-David M. Schruth
 }
 \maketitle
 \section{Licensing}

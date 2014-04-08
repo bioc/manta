@@ -2,7 +2,7 @@ Package: manta
 Version: 1.9.2
 Date: 2012-03-15
 Title: Microbial Assemblage Normalized Transcript Analysis
-Author: Ginger Armbrust, Adrian Marchetti, David M. Schruth
+Author: Ginger Armbrust, Adrian Marchetti
 Maintainer: Chris Berthiaume <chrisbee@uw.edu>, Adrian Marchetti
         <amarchetti@unc.edu>
 Depends: R (>= 1.8.0), methods, edgeR (>= 2.5.13)
