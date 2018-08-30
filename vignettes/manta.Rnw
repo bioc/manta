@@ -36,8 +36,8 @@ Building the \Rpackage{manta} package from source requires that you have the pro
 This can typically be accomplished via the following commands from within the R command line environment:
 \begin{verbatim}
 install.packages('caroline')   # CRAN install
-biocLite('http://bioconductor.org/biocLite.R')
-biocLite('edgeR')      # Bioconductor install
+BiocManager::install('http://bioconductor.org/biocLite.R')
+BiocManager::install('edgeR')      # Bioconductor install
 \end{verbatim}
 
 Currently, however, the most recent development version of the \Rpackage{edgeR} package (> v2.5) is recommended.  
