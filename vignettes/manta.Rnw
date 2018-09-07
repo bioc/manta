@@ -36,7 +36,8 @@ Building the \Rpackage{manta} package from source requires that you have the pro
 This can typically be accomplished via the following commands from within the R command line environment:
 \begin{verbatim}
 install.packages('caroline')   # CRAN install
-BiocManager::install('http://bioconductor.org/biocLite.R')
+if (!requireNamespace("BiocManager", quietly=TRUE))
+    install.packages("BiocManager")
 BiocManager::install('edgeR')      # Bioconductor install
 \end{verbatim}
 
