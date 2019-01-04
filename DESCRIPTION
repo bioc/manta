@@ -1,5 +1,5 @@
 Package: manta
-Version: 1.29.0
+Version: 1.29.1
 Date: 2012-03-15
 Title: Microbial Assemblage Normalized Transcript Analysis
 Author: Ginger Armbrust, Adrian Marchetti
@@ -11,5 +11,5 @@ Suggests: RSQLite, plotrix
 Description: Tools for robust comparative metatranscriptomics.
 License: Artistic-2.0
 URL: http://manta.ocean.washington.edu/
-biocViews: DifferentialExpression, RNASeq, Genetics, GeneExpression,
+biocViews: ImmunoOncology, DifferentialExpression, RNASeq, Genetics, GeneExpression,
         Sequencing, QualityControl, DataImport, Visualization
